@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemie BSL 9. Klasse – Säuren &amp; Basen</title>
+<style>
+  :root{
+    --acid:#ef4444; --base:#3b82f6; --neutral:#10b981;
+    --bg:#f8fafc; --card:#ffffff; --text:#0f172a;
+    --muted:#64748b; --border:#e2e8f0;
+    --shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6;
+  }
+  a{color:inherit;text-decoration:none}
+  .container{max-width:900px;margin:0 auto;padding:0 1rem}
+
+  /* Header */
+  header{
+    background:linear-gradient(135deg,#b91c1c,#dc2626);
+    color:#fff;padding:2.5rem 1rem 2rem;border-radius:0 0 2rem 2rem;
+    box-shadow:var(--shadow);text-align:center;
+  }
+  header h1{font-size:1.8rem;font-weight:700;margin-bottom:0.5rem}
+  header p{opacity:0.9;font-size:1rem}
+  .badge{
+    display:inline-block;margin-top:1rem;padding:0.4rem 1rem;
+    background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);
+    border-radius:999px;font-size:0.85rem;font-weight:600;
+  }
+
+  /* Nav */
+  nav{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+  .nav-wrap{max-width:900px;margin:0 auto;padding:0 1rem}
+  .tabs{display:flex;overflow-x:auto;gap:0.25rem;padding:0.75rem 0;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex:0 0 auto;padding:0.5rem 1rem;border:1px solid var(--border);
+    background:#fff;border-radius:0.75rem;cursor:pointer;font-size:0.9rem;
+    color:var(--muted);font-weight:500;white-space:nowrap;transition:all .2s;
+  }
+  .tab:hover{background:#f1f5f9;color:var(--text)}
+  .tab.active{background:var(--acid);color:#fff;border-color:var(--acid)}
+
+  /* Sections */
+  section{display:none;padding:2rem 1rem 4rem;animation:fade .3s ease}
+  section.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  section h2{font-size:1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+  section h2 .num{
+    width:2rem;height:2rem;background:var(--acid);color:#fff;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;
+  }
+
+  /* Cards */
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:1rem;
+    padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow);
+  }
+  .card h3{font-size:1.1rem;margin-bottom:0.75rem;color:#b91c1c}
+  .card p,.card li{font-size:0.95rem}
+  ul{list-style:disc inside;padding-left:0}
+  li{margin-bottom:0.4rem}
+
+  /* Grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:1rem}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1rem;text-align:center}
+  .stat .v{font-size:1.75rem;font-weight:700;color:var(--acid)}
+  .stat .l{font-size:0.85rem;color:var(--muted);margin-top:0.25rem}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;
+    padding:0.6rem 1.25rem;border-radius:0.75rem;border:none;cursor:pointer;
+    font-weight:600;font-size:0.95rem;transition:all .2s;
+  }
+  .btn-primary{background:var(--acid);color:#fff}
+  .btn-primary:hover{background:#dc2626;transform:translateY(-1px)}
+  .btn-outline{background:#fff;border:1px solid var(--border);color:var(--text)}
+  .btn-outline:hover{background:#f8fafc}
+  .btn-success{background:var(--neutral);color:#fff}
+  .btn-success:hover{background:#059669}
+  .btn-small{padding:0.35rem 0.8rem;font-size:0.85rem}
+
+  /* pH scale */
+  .ph-scale{
+    display:flex;height:34px;border-radius:17px;overflow:hidden;border:1px solid var(--border);
+    margin:1rem 0;position:relative;
+  }
+  .ph-step{flex:1;height:100%}
+  .ph-label{position:absolute;width:24px;height:24px;background:var(--card);border:1px solid var(--border);
+    border-radius:50%;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+    transform:translate(-50%,-50%);top:50%;box-shadow:0 1px 2px rgb(0 0 0 / 0.1);user-select:none;}
+  .ph-box{background:var(--card);border:1px solid var(--border);border-radius:0.75rem;padding:1rem;text-align:center;min-height:140px}
+  .ph-value{font-size:3rem;font-weight:800}
+  .ph-type{font-size:0.9rem;color:var(--muted);margin-top:0.25rem}
+
+  /* Quiz */
+  .quiz-card{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+  .question{font-weight:600;font-size:1rem;margin-bottom:1rem}
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.5rem}
+  .opt{
+    border:1px solid var(--border);background:#fff;border-radius:0.75rem;padding:0.75rem;
+    cursor:pointer;text-align:center;font-size:0.9rem;transition:all .2s;
+  }
+  .opt:hover{background:#f8fafc;border-color:var(--acid)}
+  .opt.correct{background:#dcfce7;border-color:var(--neutral);color:#166534}
+  .opt.wrong{background:#fee2e2;border-color:var(--acid);color:#991b1b}
+  .opt.disabled{cursor:default}
+  .feedback{margin-top:0.75rem;font-weight:600;font-size:0.95rem;min-height:1.3rem}
+  .quiz-progress{font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem}
+  .score-badge{font-size:1.1rem;font-weight:700}
+
+  /* Flashcards */
+  .deck{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.75rem;margin-bottom:1rem}
+  .flash{
+    aspect-ratio:1;background:#fff;border:1px solid var(--border);border-radius:1rem;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:0.95rem;font-weight:600;padding:0.5rem;cursor:pointer;position:relative;
+    transition:transform .2s;box-shadow:var(--shadow);
+  }
+  .flash:hover{transform:translateY(-2px)}
+  .flash .back{display:none;padding:0.75rem;text-align:center;line-height:1.4;font-size:0.85rem}
+  .flash.flipped .front{display:none}
+  .flash.flipped .back{display:block}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;margin-top:0.5rem;font-size:0.9rem}
+  th,td{border:1px solid var(--border);padding:0.6rem;text-align:left}
+  th{background:#f1f5f9;color:#334155;font-weight:600}
+  tr:nth-child(even){background:#f8fafc}
+
+  /* Badges */
+  .tag{display:inline-block;padding:0.15rem 0.5rem;border-radius:0.5rem;font-size:0.75rem;font-weight:600;margin-right:0.4rem}
+  .tag.acid{background:#fee2e2;color:#991b1b}
+  .tag.base{background:#dbeafe;color:#1e40af}
+  .tag.neutral{background:#dcfce7;color:#166534}
+
+  /* Plan */
+  .plan{background:#fff;border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow)}
+  .plan-step{display:flex;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+  .plan-step:last-child{border:none;margin-bottom:0;padding-bottom:0}
+  .plan-num{width:2rem;height:2rem;background:var(--acid);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0}
+  .plan-time{font-size:0.8rem;color:var(--muted);font-weight:600;margin-left:auto}
+
+  footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border)}
+
+  /* Progress bar */
+  .progress{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;margin:1rem 0}
+  .progress-bar{height:100%;background:var(--acid);width:0%;transition:width .3s}
+
+  .hidden{display:none}
+  .center{text-align:center}
+  .muted{color:var(--muted);font-size:0.9rem}
+  .mt{margin-top:1rem}
+  .mb{margin-bottom:1rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Chemie BSL 9. Klasse</h1>
+  <p>Säuren &amp; Basen – interaktive Vorbereitung</p>
+  <span class="badge">Maximal 2 Stunden Lernzeit</span>
+</header>
+
+<nav>
+  <div class="nav-wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab active" onclick="show('plan')" role="tab">📋 Lernplan</button>
+      <button class="tab" onclick="show('theorie')" role="tab">📘 Theorie</button>
+      <button class="tab" onclick="show('indikatoren')" role="tab">🧪 Indikatoren</button>
+      <button class="tab" onclick="show('ph')" role="tab">📊 pH-Wert</button>
+      <button class="tab" onclick="show('neutralisation')" role="tab">⚖️ Neutralisation</button>
+      <button class="tab" onclick="show('quiz')" role="tab">❓ Quiz</button>
+      <button class="tab" onclick="show('cheatsheet')" role="tab">📎 Spickzettel</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Lernplan -->
+  <section id="plan" class="active">
+    <h2><span class="num">1</span>Dein 2-Stunden-Lernplan</h2>
+    <div class="plan">
+      <div class="plan-step">
+        <div class="plan-num">1</div>
+        <div><strong>Theorie: Was sind Säuren und Basen?</strong> (20 Min)</div>
+        <div class="plan-time">20 Min</div>
+      </div>
+      <div class="plan-step">
+        <div class="plan-num">2</div>
+        <div><strong>Indikatoren &amp; pH-Wert</strong> (25 Min)</div>
+        <div class="plan-time">25 Min</div>
+      </div>
+      <div class="plan-step">
+        <div class="plan-num">3</div>
+        <div><strong>Stärke von Säuren &amp; Basen</strong> (20 Min)</div>
+        <div class="plan-time">20 Min</div>
+      </div>
+      <div class="plan-step">
+        <div class="plan-num">4</div>
+        <div><strong>Neutralisation &amp; Salzbildung</strong> (25 Min)</div>
+        <div class="plan-time">25 Min</div>
+      </div>
+      <div class="plan-step">
+        <div class="plan-num">5</div>
+        <div><strong>Quiz &amp; Selbsttest</strong> (20 Min)</div>
+        <div class="plan-time">20 Min</div>
+      </div>
+      <div class="plan-step mt">
+        <div class="plan-num">6</div>
+        <div><strong>Spickzettel wiederholen</strong> (10 Min)</div>
+        <div class="plan-time">10 Min</div>
+      </div>
+    </div>
+    <div class="center mt">
+      <button class="btn btn-primary" onclick="show('theorie')">Jetzt starten →</button>
+    </div>
+  </section>
+
+  <!-- Theorie -->
+  <section id="theorie">
+    <h2><span class="num">2</span>Theorie: Säuren und Basen</h2>
+
+    <div class="card">
+      <h3>Säuren</h3>
+      <ul>
+        <li>Geben in wässriger Lösung <strong>Hydronium-Ionen (H₃O⁺)</strong> ab.</li>
+        <li>Schmecken sauer (z. B. Zitrone, Essig).</li>
+        <li>Lösen manche Metalle und setzen Wasserstoffgas frei.</li>
+        <li>Beispiele: Salzsäure (HCl), Essigsäure (CH₃COOH), Zitronensäure.</li>
+        <li><span class="tag acid">pH &lt; 7</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Basen</h3>
+      <ul>
+        <li>Geben in wässriger Lösung <strong>Hydroxid-Ionen (OH⁻)</strong> ab (oder nehmen H⁺ auf).</li>
+        <li>Schmecken bitter, fühlen sich seifig an.</li>
+        <li>Greifen Haut und Augen stark an (Ätzung).</li>
+        <li>Beispiele: Natronlauge (NaOH), Ammoniaklösung, Backpulver (löslich).</li>
+        <li><span class="tag base">pH &gt; 7</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Neutrale Lösungen</h3>
+      <ul>
+        <li>Sind weder sauer noch basisch.</li>
+        <li>Reines Wasser bei 25 °C.</li>
+        <li><span class="tag neutral">pH = 7</span></li>
+      </ul>
+    </div>
+
+    <div class="card mt">
+      <h3>Wichtige Definitionen</h3>
+      <p><strong>Brønsted-Säure:</strong> ein Protonen-Donor (gibt H⁺ ab).</p>
+      <p><strong>Brønsted-Base:</strong> ein Protonen-Akzeptor (nimmt H⁺ auf).</p>
+      <p><strong>Konjugierte Säure/Base:</strong> entsprechen durch Abgabe/Aufnahme eines Protons.</p>
+    </div>
+  </section>
+
+  <!-- Indikatoren -->
+  <section id="indikatoren">
+    <h2><span class="num">3</span>Indikatoren</h2>
+    <p>Indikatoren verfärben sich je nach pH-Wert der Lösung. Sie zeigen an, ob eine Lösung sauer, neutral oder basisch ist.</p>
+
+    <table>
+      <thead>
+        <tr><th>Indikator</th><th>sauer</th><th>neutral</th><th>basisch</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Allgemeiner Indikator</td><td>rot → orange → gelb</td><td>grün</td><td>blau → lila → violett</td></tr>
+        <tr><td>Phenolphthalein</td><td>farblos</td><td>farblos</td><td>rosa / rot</td></tr>
+        <tr><td>Knospenlakmus</td><td>rot</td><td>lila</td><td>blau</td></tr>
+        <tr><td>Bromthymolblau</td><td>gelb</td><td>grün</td><td>blau</td></tr>
+      </tbody>
+    </table>
+
+    <div class="card mt">
+      <h3>Praktisch merken</h3>
+      <ul>
+        <li><strong>Phenolphthalein:</strong> farblos in Säure, rosa in Base → ideal für Titrationen.</li>
+        <li><strong>Lakmus:</strong> rot = sauer, blau = basisch, lila = neutral.</li>
+        <li>Indikatoren verraten die <strong>Richtung</strong> (sauer/basisch), nicht den genauen pH-Wert.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- pH -->
+  <section id="ph">
+    <h2><span class="num">4</span>Der pH-Wert</h2>
+    <p>Der pH-Wert gibt an, wie sauer oder basisch eine wässrige Lösung ist.</p>
+
+    <div class="ph-scale" id="phscale">
+      <div class="ph-step" style="background:#fee2e2"></div>
+      <div class="ph-step" style="background:#fecaca"></div>
+      <div class="ph-step" style="background:#fecaca"></div>
+      <div class="ph-step" style="background:#fef2f2"></div>
+      <div class="ph-step" style="background:#fff"></div>
+      <div class="ph-step" style="background:#dbeafe"></div>
+      <div class="ph-step" style="background:#dbeafe"></div>
+      <div class="ph-step" style="background:#bfdbfe"></div>
+      <div class="ph-step" style="background:#bfdbfe"></div>
+      <div class="ph-step" style="background:#93c5fd"></div>
+      <div class="ph-step" style="background:#93c5fd"></div>
+      <div class="ph-step" style="background:#60a5fa"></div>
+      <div class="ph-step" style="background:#60a5fa"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);margin-bottom:1rem">
+      <span>0</span><span>3</span><span>6</span><span>7</span><span>10</span><span>13</span><span>14</span>
+    </div>
+
+    <div class="grid">
+      <div class="ph-box">
+        <div class="ph-type">Aktueller Wert</div>
+        <div class="ph-value" id="phval">7</div>
+      </div>
+      <div class="ph-box center">
+        <div id="phtype">Neutral</div>
+      </div>
+    </div>
+
+    <div class="center mt">
+      <label>pH-Wert einstellen: </label>
+      <input type="range" id="phrange" min="0" max="14" value="7" style="width:70%;vertical-align:middle">
+      <span id="phdisp">7</span>
+    </div>
+
+    <div class="card mt">
+      <h3>Beispiele (annähernd)</h3>
+      <table>
+        <thead><tr><th>Lösung</th><th>pH</th><th>Eigenschaft</th></tr></thead>
+        <tbody>
+          <tr><td>Salzsäure (konzentriert)</td><td>0–1</td><td>stark sauer</td></tr>
+          <tr><td>Essig</td><td>~3</td><td>sauer</td></tr>
+          <tr><td>Kaffee</td><td>~5</td><td>leicht sauer</td></tr>
+          <tr><td>Reines Wasser</td><td>7</td><td>neutral</td></tr>
+          <tr><td>Backpulverlösung</td><td>~9</td><td>leicht basisch</td></tr>
+          <tr><td>Seifenlauge</td><td>~10</td><td>basisch</td></tr>
+          <tr><td>Natronlauge (konzentriert)</td><td>13–14</td><td>stark basisch</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Neutralisation -->
+  <section id="neutralisation">
+    <h2><span class="num">5</span>Neutralisation &amp; Salzbildung</h2>
+
+    <div class="card">
+      <h3>Die Neutralisationsreaktion</h3>
+      <p><strong>Säure + Base → Salz + Wasser</strong></p>
+      <p class="center" style="font-weight:600">H⁺ + OH⁻ → H₂O</p>
+      <ul>
+        <li>Die Säure gibt ein Proton (H⁺) ab.</li>
+        <li>Die Base nimmt das Proton auf (liefert OH⁻).</li>
+        <li>Entstehen Wasser und ein Salz.</li>
+        <li>Der pH-Wert nähert sich 7 (neutral).</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Beispielreaktionen</h3>
+      <table>
+        <thead><tr><th>Säure</th><th>Base</th><th>Salz</th><th>Gleichung</th></tr></thead>
+        <tbody>
+          <tr><td>Salzsäure HCl</td><td>Natronlauge NaOH</td><td>Kochsalz NaCl</td><td>HCl + NaOH → NaCl + H₂O</td></tr>
+          <tr><td>Essigsäure CH₃COOH</td><td>Natronlauge NaOH</td><td>Natriumacetat</td><td>CH₃COOH + NaOH → CH₃COONa + H₂O</td></tr>
+          <tr><td>Schwefelsäure H₂SO₄</td><td>Natronlauge NaOH</td><td>Natriumsulfat</td><td>H₂SO₄ + 2 NaOH → Na₂SO₄ + 2 H₂O</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card mt">
+      <h3>Äquivalenzpunkt</h3>
+      <ul>
+        <li>Punkt, an dem Säure und Base exakt im richtigen Verhältnis vorliegen.</li>
+        <li>Bei starker Säure + starker Base: pH = 7.</li>
+        <li>Erkennbar durch Indikator-Umschlag (z. B. Phenolphthalein wird rosa).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz">
+    <h2><span class="num">6</span>Quiz – teste dein Wissen</h2>
+    <div class="quiz-progress" id="qprog">Frage <span id="qcur">1</span> von <span id="qtot">10</span></div>
+    <div class="progress" id="qprogbar"><div class="progress-bar" id="qbar"></div></div>
+
+    <div class="quiz-card" id="qcard">
+      <div class="question" id="qtext">Lädt...</div>
+      <div class="options" id="qopts"></div>
+      <div class="feedback" id="qfeed"></div>
+      <div class="center mt">
+        <button class="btn btn-primary hidden" id="qnext">Nächste Frage</button>
+      </div>
+    </div>
+    <div class="center hidden" id="qresult">
+      <div class="score-badge" id="qscore">0 / 10</div>
+      <p id="qmsg"></p>
+      <button class="btn btn-outline mt" onclick="quizReset()">Noch einmal</button>
+    </div>
+  </section>
+
+  <!-- Cheatsheet -->
+  <section id="cheatsheet">
+    <h2><span class="num">7</span>Spickzettel – Zusammenfassung</h2>
+    <div class="grid">
+      <div class="card">
+        <h3 style="color:var(--acid)">Säure</h3>
+        <ul>
+          <li>gibt H⁺ / H₃O⁺ ab</li>
+          <li>schmeckt sauer</li>
+          <li><span class="tag acid">pH &lt; 7</span></li>
+          <li>Beispiel: HCl, Essig</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--base)">Base</h3>
+        <ul>
+          <li>gibt OH⁻ ab / nimmt H⁺ auf</li>
+          <li>schmeckt bitter, seifig</li>
+          <li><span class="tag base">pH &gt; 7</span></li>
+          <li>Beispiel: NaOH, Ammoniak</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--neutral)">Neutral</h3>
+        <ul>
+          <li>weder sauer noch basisch</li>
+          <li><span class="tag neutral">pH = 7</span></li>
+          <li>Beispiel: reines Wasser</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt">
+      <h3>Indikatoren kurz</h3>
+      <table>
+        <thead><tr><th>Indikator</th><th>sauer</th><th>basisch</th></tr></thead>
+        <tbody>
+          <tr><td>Lakmus</td><td>rot</td><td>blau</td></tr>
+          <tr><td>Phenolphthalein</td><td>farblos</td><td>rosa</td></tr>
+          <tr><td>Bromthymolblau</td><td>gelb</td><td>blau</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card mt">
+      <h3>Neutralisation</h3>
+      <p style="font-weight:600;text-align:center">Säure + Base → Salz + Wasser</p>
+      <p style="font-weight:600;text-align:center">H⁺ + OH⁻ → H₂O</p>
+      <p class="muted">Äquivalenzpunkt stark/strong: pH = 7</p>
+    </div>
+
+    <div class="center mt">
+      <button class="btn btn-primary" onclick="show('quiz')">Zum Quiz →</button>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Chemie BSL 9. Klasse – Säuren &amp; Basen &nbsp;·&nbsp; Viel Erfolg bei der BSL!
+</footer>
+
+<script>
+  function show(id){
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelector('.tab[onclick="show(\''+id+'\')"]').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // pH simulator
+  (function(){
+    const range=document.getElementById('phrange');
+    const disp=document.getElementById('phdisp');
+    const val=document.getElementById('phval');
+    const type=document.getElementById('phtype');
+    const labels=document.querySelectorAll('.ph-label');
+    function update(){
+      const p=+range.value;
+      disp.textContent=p; val.textContent=p;
+      if(p<7){type.textContent='Säure';type.style.color='#b91c1c';val.style.color='#b91c1c'}
+      else if(p>7){type.textContent='Base';type.style.color='#2563eb';val.style.color='#2563eb'}
+      else{type.textContent='Neutral';type.style.color='#64748b';val.style.color='#0f172a'}
+      // move a marker
+      labels.forEach(l=>l.remove());
+      const mark=document.createElement('div');
+      mark.className='ph-label'; mark.textContent=p;
+      mark.style.left=(p/14*100)+'%';
+      document.getElementById('phscale').appendChild(mark);
+    }
+    range.addEventListener('input',update);
+    update();
+  })();
+
+  // Quiz
+  const questions=[
+    {q:'Was gibt eine Säure in wässriger Lösung ab?',o:['H⁺ (Hydronium)','OH⁻','O₂','Na⁺'],a:0},
+    {q:'Welcher pH-Wert ist neutral?',o:['0','7','14','1'],a:1},
+    {q:'Welche Farbe hat Lakmus in einer Basenlösung?',o:['rot','blau','grün','gelb'],a:1},
+    {q:'Was entsteht bei einer Neutralisation?',o:['Salz und Wasser','nur Säure','nur Base','Gas'],a:0},
+    {q:'Welcher Indikator wird in Basen rosa?',o:['Lakmus','Phenolphthalein','Bromthymolblau','Allgemeiner Indikator'],a:1},
+    {q:'Ist Essig sauer oder basisch?',o:['sauer','basisch','neutral','gar nichts'],a:0},
+    {q:'Was ist das Produkt von H⁺ + OH⁻?',o:['H₂O','H₂','O₂','NaCl'],a:0},
+    {q:'Welcher pH-Wert zeigt eine starke Base an?',o:['1','7','13','0'],a:2},
+    {q:'Was schmeckt bitter und fühlt sich seifig an?',o:['Säure','Base','Salz','Wasser'],a:1},
+    {q:'Was ist ein Äquivalenzpunkt?',o:['pH=0','Säure und Base im richtigen Verhältnis','nur Wasser','pH=14'],a:1}
+  ];
+  let qi=0,score=0,answered=false;
+  function quizRender(){
+    const q=questions[qi];
+    document.getElementById('qcur').textContent=qi+1;
+    document.getElementById('qtot').textContent=questions.length;
+    document.getElementById('qprogbar').querySelector('.progress-bar').style.width=((qi+1)/questions.length*100)+'%';
+    document.getElementById('qtext').textContent=q.q;
+    const opts=document.getElementById('qopts');opts.innerHTML='';
+    q.o.forEach((o,i)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=o;
+      b.onclick=()=>quizAnswer(i);
+      opts.appendChild(b);
+    });
+    document.getElementById('qfeed').textContent='';
+    document.getElementById('qnext').classList.add('hidden');
+    answered=false;
+  }
+  function quizAnswer(i){
+    if(answered)return;answered=true;
+    const q=questions[qi];const btns=document.querySelectorAll('.opt');
+    btns.forEach(b=>b.classList.add('disabled'));
+    if(i===q.a){btns[i].classList.add('correct');document.getElementById('qfeed').textContent='Richtig! ✔';score++;}
+    else{btns[i].classList.add('wrong');btns[q.a].classList.add('correct');document.getElementById('qfeed').textContent='Falsch. ✘';}
+    document.getElementById('qnext').classList.remove('hidden');
+  }
+  document.getElementById('qnext').onclick=()=>{
+    qi++;if(qi<questions.length)quizRender();else quizEnd();
+  };
+  function quizEnd(){
+    document.getElementById('qcard').classList.add('hidden');
+    document.getElementById('qresult').classList.remove('hidden');
+    document.getElementById('qscore').textContent=score+' / '+questions.length;
+    const m=score>=8?'Ausgezeichnet! Du bist bereit für die BSL.' : score>=5?'Gut, wiederhol noch die schwachen Themen.' : 'Lerne noch einmal die Theorie durch.';
+    document.getElementById('qmsg').textContent=m;
+  }
+  function quizReset(){qi=0;score=0;document.getElementById('qcard').classList.remove('hidden');document.getElementById('qresult').classList.add('hidden');quizRender();}
+  quizRender();
+</script>
+
+</body>
+</html>
